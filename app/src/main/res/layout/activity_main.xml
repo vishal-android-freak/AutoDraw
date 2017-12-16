@@ -1,53 +1,48 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:animateLayoutChanges="true"
     android:background="@android:color/white">
 
-    <android.support.design.widget.FloatingActionButton
-        android:visibility="gone"
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_centerInParent="true" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/undoBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_margin="8dp"
         android:src="@drawable/undo_icon"
-        app:fabSize="mini"
-        android:layout_alignParentRight="true"/>
+        android:visibility="gone"
+        app:fabSize="mini" />
 
     <android.support.design.widget.FloatingActionButton
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:src="@drawable/redo_icon"
-        android:id="@+id/redoBtn"
-        android:layout_below="@+id/undoBtn"
-        app:fabSize="mini"
-        android:layout_alignParentRight="true"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:id="@+id/clearBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/undoBtn"
+        android:layout_margin="8dp"
         android:src="@drawable/cancel_icon"
-        android:layout_below="@+id/redoBtn"
-        app:fabSize="mini"
-        android:layout_alignParentRight="true"/>
+        android:visibility="gone"
+        app:fabSize="mini" />
 
     <vaf.vishal.autodraw.views.AutoDrawView
         android:id="@+id/autodraw"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/placeholderCard"/>
+        android:layout_above="@+id/placeholderCard" />
 
     <android.support.v7.widget.CardView
-        android:layout_alignParentBottom="true"
         android:id="@+id/placeholderCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         app:cardElevation="4dp">
 
         <LinearLayout
@@ -59,11 +54,11 @@
                 android:id="@+id/placeholderText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="16dp"
-                android:textSize="18sp"
-                android:textColor="#212121"
                 android:text="Do you mean:"
-                android:gravity="center"/>
+                android:textColor="#212121"
+                android:textSize="18sp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/suggestionsRecycler"

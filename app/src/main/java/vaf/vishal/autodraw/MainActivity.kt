@@ -54,8 +54,8 @@ class MainActivity : AppCompatActivity() {
         undoBtn.setOnClickListener {
             autodraw.undo()
         }
-        redoBtn.setOnClickListener {
-            autodraw.redo()
+        clearBtn.setOnClickListener {
+            autodraw.clear()
         }
 
         autodraw.setOnDrawEventListener(object : OnDrawEventListener {
@@ -65,6 +65,9 @@ class MainActivity : AppCompatActivity() {
                 xPointsArray = ArrayList()
                 yPointsArray = ArrayList()
                 timeDiffArray = ArrayList()
+                placeholderCard.visibility = View.GONE
+                undoBtn.visibility = View.GONE
+                clearBtn.visibility = View.GONE
             }
 
             override fun onDrawStop() {
@@ -75,6 +78,9 @@ class MainActivity : AppCompatActivity() {
                 dataArray.add(dataPointsArrayList)
 
                 getSuggestions(autodraw.width, autodraw.height, dataArray)
+                placeholderCard.visibility = View.VISIBLE
+                undoBtn.visibility = View.VISIBLE
+                clearBtn.visibility = View.VISIBLE
             }
 
             override fun onDrawing(pointX: Int, pointY: Int) {
@@ -85,17 +91,16 @@ class MainActivity : AppCompatActivity() {
 
         })
         autodraw.setOnActionsCountChangeListener(object: OnActionsCountChangeListener {
-            override fun onUndoOrRedoCountChange(undoCount: Int, redoCount: Int) {
+            override fun onUndoCountChange(undoCount: Int) {
                 if (undoCount > 0) {
                     undoBtn.visibility = View.VISIBLE
+                    clearBtn.visibility = View.VISIBLE
+                    suggestionsRecycler.visibility = View.VISIBLE
                 } else {
                     undoBtn.visibility = View.GONE
-                }
-
-                if (redoCount > 0) {
-                    redoBtn.visibility = View.VISIBLE
-                } else {
-                    redoBtn.visibility = View.GONE
+                    clearBtn.visibility = View.GONE
+                    placeholderText.text = "Start doodling!"
+                    suggestionsRecycler.visibility = View.GONE
                 }
             }
 
@@ -158,6 +163,7 @@ class MainActivity : AppCompatActivity() {
                 .getAsJSONObject(object : JSONObjectRequestListener {
                     override fun onResponse(response: JSONObject) {
                         stencilData = response
+                        progressBar.visibility = View.GONE
                     }
 
                     override fun onError(anError: ANError?) {

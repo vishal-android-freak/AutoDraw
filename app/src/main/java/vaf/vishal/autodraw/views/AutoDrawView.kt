@@ -39,7 +39,7 @@ class AutoDrawView(context: Context, attributeSet: AttributeSet) : ImageView(con
             }
             MotionEvent.ACTION_UP -> {
                 drawListener.onDrawStop()
-                actionsListener.onUndoOrRedoCountChange(undoPaths.size, redoPaths.size)
+                actionsListener.onUndoCountChange(undoPaths.size)
             }
             else -> {
                 return false
@@ -52,24 +52,15 @@ class AutoDrawView(context: Context, attributeSet: AttributeSet) : ImageView(con
     fun clear() {
         path.reset()
         undoPaths.clear()
-        actionsListener.onUndoOrRedoCountChange(undoPaths.size, redoPaths.size)
-    }
-
-    fun undo() {
-        val subPath = undoPaths[undoPaths.size - 1]
-        redoPaths.add(path)
-        path.set(subPath)
-        undoPaths.removeAt(undoPaths.size - 1)
-        actionsListener.onUndoOrRedoCountChange(undoPaths.size, redoPaths.size)
+        actionsListener.onUndoCountChange(undoPaths.size)
         invalidate()
     }
 
-    fun redo() {
-        val subPath = redoPaths[redoPaths.size - 1]
-        undoPaths.add(path)
-        path.set(subPath)
-        redoPaths.removeAt(redoPaths.size - 1)
-        actionsListener.onUndoOrRedoCountChange(undoPaths.size, redoPaths.size)
+    fun undo() {
+        path.rewind()
+        path.set(undoPaths[undoPaths.size - 1])
+        undoPaths.removeAt(undoPaths.size - 1)
+        actionsListener.onUndoCountChange(undoPaths.size)
         invalidate()
     }
 
@@ -93,7 +84,6 @@ class AutoDrawView(context: Context, attributeSet: AttributeSet) : ImageView(con
     lateinit var drawPaint: Paint
     val path = Path()
     val undoPaths = ArrayList<Path>()
-    val redoPaths = ArrayList<Path>()
 
     private fun setupPaint() {
         drawPaint = Paint()
