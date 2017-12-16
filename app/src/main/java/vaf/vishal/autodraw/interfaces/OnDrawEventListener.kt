@@ -10,5 +10,5 @@ import android.graphics.Point
 interface OnDrawEventListener {
     fun onDrawStart()
     fun onDrawing(pointX: Int, pointY: Int)
-    fun onDrawStop(path: Path)
+    fun onDrawStop()
 }

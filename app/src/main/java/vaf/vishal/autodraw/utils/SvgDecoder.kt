@@ -1,12 +1,16 @@
 package vaf.vishal.autodraw.utils
 
+/**
+ * Created by vishal on 14/12/17.
+ */
+
+
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.SimpleResource
 import com.caverock.androidsvg.SVG
 import com.caverock.androidsvg.SVGParseException
-
 import java.io.IOException
 import java.io.InputStream
 
