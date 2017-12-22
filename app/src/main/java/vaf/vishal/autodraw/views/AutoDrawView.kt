@@ -39,7 +39,7 @@ class AutoDrawView(context: Context, attributeSet: AttributeSet) : ImageView(con
             }
             MotionEvent.ACTION_UP -> {
                 drawListener.onDrawStop()
-                actionsListener.onUndoCountChange(undoPaths.size)
+                actionsListener.onUndoCountChange(undoPaths.size, false)
             }
             else -> {
                 return false
@@ -49,18 +49,34 @@ class AutoDrawView(context: Context, attributeSet: AttributeSet) : ImageView(con
         return true
     }
 
-    fun clear() {
+    fun clear(isImageLoaded: Boolean) {
+        if (isImageLoaded) setImageBitmap(null)
         path.reset()
         undoPaths.clear()
-        actionsListener.onUndoCountChange(undoPaths.size)
+        actionsListener.onUndoCountChange(undoPaths.size, false)
         invalidate()
     }
 
-    fun undo() {
-        path.rewind()
-        path.set(undoPaths[undoPaths.size - 1])
-        undoPaths.removeAt(undoPaths.size - 1)
-        actionsListener.onUndoCountChange(undoPaths.size)
+    fun loadImage() {
+        historyPath.set(path)
+        undoHistoryPaths.addAll(undoPaths)
+        path.reset()
+        undoPaths.clear()
+        invalidate()
+    }
+
+    fun undo(isImageLoaded: Boolean) {
+        if (isImageLoaded) {
+            setImageBitmap(null)
+            path.set(historyPath)
+            undoPaths.addAll(undoHistoryPaths)
+            historyPath.reset()
+            undoHistoryPaths.clear()
+        } else {
+            path.set(undoPaths[undoPaths.size - 1])
+            undoPaths.removeAt(undoPaths.size - 1)
+            actionsListener.onUndoCountChange(undoPaths.size, true)
+        }
         invalidate()
     }
 
@@ -84,6 +100,8 @@ class AutoDrawView(context: Context, attributeSet: AttributeSet) : ImageView(con
     lateinit var drawPaint: Paint
     val path = Path()
     val undoPaths = ArrayList<Path>()
+    val historyPath = Path()
+    val undoHistoryPaths = ArrayList<Path>()
 
     private fun setupPaint() {
         drawPaint = Paint()

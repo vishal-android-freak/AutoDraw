@@ -1,7 +1,5 @@
 package vaf.vishal.autodraw
 
-import android.graphics.Path
-import android.graphics.Point
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -14,7 +12,6 @@ import com.androidnetworking.common.Priority
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.androidnetworking.interfaces.JSONObjectRequestListener
-import com.androidnetworking.interfaces.StringRequestListener
 import com.bumptech.glide.RequestBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONArray
@@ -31,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var stencilData: JSONObject
     val dataArray = ArrayList<ArrayList<ArrayList<Int>>>()
     var time = 0L
+    var isImageLoaded = false
     lateinit var xPointsArray: ArrayList<Int>
     lateinit var yPointsArray: ArrayList<Int>
     lateinit var timeDiffArray: ArrayList<Int>
@@ -52,10 +50,12 @@ class MainActivity : AppCompatActivity() {
         placeholderText.text = "Start doodling!"
 
         undoBtn.setOnClickListener {
-            autodraw.undo()
+            autodraw.undo(isImageLoaded)
+            isImageLoaded = false
         }
         clearBtn.setOnClickListener {
-            autodraw.clear()
+            autodraw.clear(isImageLoaded)
+            isImageLoaded = false
         }
 
         autodraw.setOnDrawEventListener(object : OnDrawEventListener {
@@ -91,8 +91,12 @@ class MainActivity : AppCompatActivity() {
 
         })
         autodraw.setOnActionsCountChangeListener(object: OnActionsCountChangeListener {
-            override fun onUndoCountChange(undoCount: Int) {
+            override fun onUndoCountChange(undoCount: Int, undoClicked: Boolean) {
                 if (undoCount > 0) {
+                    if (undoClicked) {
+                        dataArray.removeAt(dataArray.size - 1)
+                        getSuggestions(autodraw.width, autodraw.height, dataArray)
+                    }
                     undoBtn.visibility = View.VISIBLE
                     clearBtn.visibility = View.VISIBLE
                     suggestionsRecycler.visibility = View.VISIBLE
@@ -132,7 +136,6 @@ class MainActivity : AppCompatActivity() {
                     override fun onResponse(response: JSONArray) {
                         val predictions = ((response[1] as JSONArray)[0] as JSONArray)[1] as JSONArray
                         for (i in 0 until predictions.length()) {
-                            Log.d("array", predictions.optString(i))
                             val predictionArray = stencilData.optJSONArray(predictions.optString(i))
                             if (predictionArray !== null)
                                 (0 until predictionArray.length()).mapTo(adapterData) { predictionArray.optJSONObject(it) }
@@ -141,7 +144,8 @@ class MainActivity : AppCompatActivity() {
                         val adapter = PredictionImageAdapter(adapterData)
                         adapter.setOnPredictionSelectListener(object: OnPredictionSelectListener {
                             override fun onSelect(imageUrl: String) {
-                                autodraw.clear()
+                                autodraw.loadImage()
+                                isImageLoaded = true
                                 requestBuilder.load(Uri.parse(imageUrl)).into(autodraw)
                             }
 

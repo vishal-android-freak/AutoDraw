@@ -5,5 +5,5 @@ package vaf.vishal.autodraw.interfaces
  */
 
 interface OnActionsCountChangeListener {
-    fun onUndoCountChange(undoCount: Int)
+    fun onUndoCountChange(undoCount: Int, undoClicked: Boolean)
 }
